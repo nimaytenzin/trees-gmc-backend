@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   UseGuards,
+  Logger,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { TreesService } from './trees.service';
@@ -21,10 +22,17 @@ import { CurrentUser } from '../common/decorators/current-user.decorator';
 @Controller('api/trees')
 @UseGuards(JwtAuthGuard)
 export class TreesController {
+  private readonly logger = new Logger(TreesController.name);
+
   constructor(private readonly treesService: TreesService) {}
 
   @Post()
   create(@Body() dto: CreateTreeDto, @CurrentUser() user: any) {
+    this.logger.log({
+      message: 'Creating tree',
+      dto,
+      user: user ? { id: user.id, email: user.email, role: user.role } : null,
+    });
     return this.treesService.create(dto, user);
   }
 
