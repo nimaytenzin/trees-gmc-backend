@@ -37,14 +37,17 @@ export class Tree {
   surveyAreaId?: string | null;
 
   // --- Location ---
-  @Column('decimal', { precision: 12, scale: 8 })
+  @Column('decimal', { precision: 15, scale: 8 })
   xCoordinate: number;
 
-  @Column('decimal', { precision: 12, scale: 8 })
+  @Column('decimal', { precision: 15, scale: 8 })
   yCoordinate: number;
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  @Column('decimal', { precision: 15, scale: 8, nullable: true })
   zCoordinate: number;
+
+  @Column('int', { nullable: true })
+  yearOfPlantation: number | null;
 
 
   // --- Relations ---
