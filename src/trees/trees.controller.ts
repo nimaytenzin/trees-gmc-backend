@@ -27,13 +27,20 @@ export class TreesController {
   constructor(private readonly treesService: TreesService) {}
 
   @Post()
-  create(@Body() dto: CreateTreeDto, @CurrentUser() user: any) {
+  async create(@Body() dto: CreateTreeDto, @CurrentUser() user: any) {
     this.logger.log({
       message: 'Creating tree',
       dto,
       user: user ? { id: user.id, email: user.email, role: user.role } : null,
     });
-    return this.treesService.create(dto, user);
+    try {
+      return await this.treesService.create(dto, user);
+    } catch (err: any) {
+      // Log full error for PM2/Nest logs
+      // eslint-disable-next-line no-console
+      console.error('Error while creating tree:', err);
+      throw err;
+    }
   }
 
   @Get()
