@@ -20,13 +20,13 @@ export class GrowthMetric {
   @Column({ type: 'enum', enum: AssessmentType, default: AssessmentType.INITIAL })
   assessmentType: AssessmentType;
 
-  @Column('decimal', { precision: 8, scale: 2 })
+  @Column('decimal', { precision: 12, scale: 4 })
   heightM: number;
 
-  @Column('decimal', { precision: 8, scale: 2 })
-  dbhCm: number;
+  @Column('decimal', { precision: 12, scale: 4 })
+  dbhM: number;
 
-  @Column('decimal', { precision: 8, scale: 2 })
+  @Column('decimal', { precision: 12, scale: 4 })
   canopySpreadM: number;
 
   @Column({ type: 'text', nullable: true })

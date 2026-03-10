@@ -68,7 +68,7 @@ export class TreesService {
     };
 
     const addLatestMetricNumericFilter = (
-      field: 'heightM' | 'dbhCm' | 'canopySpreadM',
+      field: 'heightM' | 'dbhM' | 'canopySpreadM',
       op: string | undefined,
       value: number | undefined,
       paramName: string,
@@ -102,7 +102,7 @@ export class TreesService {
     }
 
     addLatestMetricNumericFilter('heightM', heightOp, heightValue, 'heightValue');
-    addLatestMetricNumericFilter('dbhCm', dbhOp, dbhValue, 'dbhValue');
+    addLatestMetricNumericFilter('dbhM', dbhOp, dbhValue, 'dbhValue');
     addLatestMetricNumericFilter('canopySpreadM', canopyOp, canopyValue, 'canopyValue');
 
     const total = await qb.getCount();
@@ -171,10 +171,10 @@ export class TreesService {
     const avgMetricsRow = await this.dataSource.query(
       `SELECT
          AVG(sub."heightM")::text as "avgHeight",
-         AVG(sub."dbhCm")::text as "avgDbh",
+         AVG(sub."dbhM")::text as "avgDbh",
          AVG(sub."canopySpreadM")::text as "avgCanopy"
        FROM (
-         SELECT DISTINCT ON ("treeId") "treeId", "heightM", "dbhCm", "canopySpreadM"
+         SELECT DISTINCT ON ("treeId") "treeId", "heightM", "dbhM", "canopySpreadM"
          FROM growth_metrics
          ORDER BY "treeId", "recordedAt" DESC
        ) sub`,

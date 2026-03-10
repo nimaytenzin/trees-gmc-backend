@@ -98,7 +98,7 @@ async function seed() {
       const metric = metricRepo.create({
         assessmentType: i === 0 ? AssessmentType.INITIAL : AssessmentType.PERIODIC,
         heightM: +(baseH + i * 0.5).toFixed(2),
-        dbhCm: +(20 + Math.random() * 30 + i * 2).toFixed(2),
+        dbhM: +(0.2 + Math.random() * 0.3 + i * 0.02).toFixed(2),
         canopySpreadM: +(3 + Math.random() * 8 + i * 0.3).toFixed(2),
         remarks: i === 0 ? 'Initial measurement' : `Follow-up measurement ${i + 1}`,
         recordedAt: new Date(Date.now() - (2 - i) * 90 * 24 * 60 * 60 * 1000),

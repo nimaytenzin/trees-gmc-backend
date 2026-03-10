@@ -6,7 +6,7 @@ export class CreateGrowthMetricDto {
   heightM: number;
 
   @IsNumber()
-  dbhCm: number;
+  dbhM: number;
 
   @IsNumber()
   canopySpreadM: number;
