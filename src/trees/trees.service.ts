@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import { Tree } from './entities/tree.entity';
@@ -6,30 +6,82 @@ import { GrowthMetric } from '../growth-metrics/entities/growth-metric.entity';
 import { CreateTreeDto } from './dto/create-tree.dto';
 import { UpdateTreeDto } from './dto/update-tree.dto';
 import { TreeFilterDto } from './dto/tree-filter.dto';
+import { SurveyArea } from '../survey-areas/entities/survey-area.entity';
+import { Role } from '../common/enums/role.enum';
 
 @Injectable()
 export class TreesService {
   constructor(
     @InjectRepository(Tree)
     private readonly treeRepository: Repository<Tree>,
+    @InjectRepository(SurveyArea)
+    private readonly surveyAreasRepository: Repository<SurveyArea>,
     private readonly dataSource: DataSource,
   ) {}
 
-  async create(dto: CreateTreeDto): Promise<Tree> {
+  async create(dto: CreateTreeDto, user?: { role?: Role }): Promise<Tree> {
+    if (user?.role === Role.ENUMERATOR && !dto.surveyAreaId) {
+      throw new BadRequestException('surveyAreaId is required for enumerator surveys');
+    }
+
+    if (dto.surveyAreaId) {
+      const exists = await this.surveyAreasRepository.findOne({
+        where: { id: dto.surveyAreaId },
+      });
+      if (!exists) throw new BadRequestException('Invalid surveyAreaId');
+    }
+
     const tree = this.treeRepository.create(dto);
     const saved = await this.treeRepository.save(tree);
     return this.findOne(saved.id);
   }
 
   async findAll(filters: TreeFilterDto) {
-    const { search, healthCondition, speciesId, page = 1, limit = 20 } = filters;
+    const {
+      search,
+      healthCondition,
+      speciesId,
+      heightOp,
+      heightValue,
+      dbhOp,
+      dbhValue,
+      canopyOp,
+      canopyValue,
+      page = 1,
+      limit = 20,
+    } = filters;
 
     const qb = this.treeRepository
       .createQueryBuilder('tree')
       .leftJoinAndSelect('tree.species', 'species')
       .leftJoinAndSelect('tree.growthMetrics', 'metric')
+      .leftJoinAndSelect('tree.surveyArea', 'surveyArea')
       .orderBy('tree.createdAt', 'DESC')
       .addOrderBy('metric.recordedAt', 'DESC');
+
+    const opSql: Record<string, string> = {
+      eq: '=',
+      gt: '>',
+      gte: '>=',
+      lt: '<',
+      lte: '<=',
+    };
+
+    const addLatestMetricNumericFilter = (
+      field: 'heightM' | 'dbhCm' | 'canopySpreadM',
+      op: string | undefined,
+      value: number | undefined,
+      paramName: string,
+    ) => {
+      if (!op || value === undefined || value === null || Number.isNaN(value)) return;
+      const sqlOp = opSql[op];
+      if (!sqlOp) return;
+
+      qb.andWhere(
+        `(SELECT gm."${field}" FROM growth_metrics gm WHERE gm."treeId" = tree.id ORDER BY gm."recordedAt" DESC LIMIT 1) ${sqlOp} :${paramName}`,
+        { [paramName]: value },
+      );
+    };
 
     if (search) {
       qb.andWhere(
@@ -48,6 +100,10 @@ export class TreesService {
     if (speciesId) {
       qb.andWhere('tree.speciesId = :speciesId', { speciesId });
     }
+
+    addLatestMetricNumericFilter('heightM', heightOp, heightValue, 'heightValue');
+    addLatestMetricNumericFilter('dbhCm', dbhOp, dbhValue, 'dbhValue');
+    addLatestMetricNumericFilter('canopySpreadM', canopyOp, canopyValue, 'canopyValue');
 
     const total = await qb.getCount();
     const trees = await qb
@@ -69,6 +125,7 @@ export class TreesService {
       .createQueryBuilder('tree')
       .leftJoinAndSelect('tree.species', 'species')
       .leftJoinAndSelect('tree.growthMetrics', 'metric')
+      .leftJoinAndSelect('tree.surveyArea', 'surveyArea')
       .orderBy('metric.recordedAt', 'DESC')
       .getMany();
   }
@@ -76,7 +133,7 @@ export class TreesService {
   async findOne(id: string): Promise<Tree> {
     const tree = await this.treeRepository.findOne({
       where: { id },
-      relations: ['species', 'growthMetrics', 'growthMetrics.photos'],
+      relations: ['species', 'surveyArea', 'growthMetrics', 'growthMetrics.photos'],
       order: { growthMetrics: { recordedAt: 'DESC' } },
     });
     if (!tree) throw new NotFoundException('Tree not found');

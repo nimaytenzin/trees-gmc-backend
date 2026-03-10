@@ -33,6 +33,12 @@ export class PublicController {
       search: filters.search,
       healthCondition: filters.healthCondition,
       speciesId: filters.speciesId,
+      heightOp: filters.heightOp,
+      heightValue: filters.heightValue ? parseFloat(filters.heightValue) : undefined,
+      dbhOp: filters.dbhOp,
+      dbhValue: filters.dbhValue ? parseFloat(filters.dbhValue) : undefined,
+      canopyOp: filters.canopyOp,
+      canopyValue: filters.canopyValue ? parseFloat(filters.canopyValue) : undefined,
       page: filters.page ? parseInt(filters.page) : 1,
       limit: filters.limit ? parseInt(filters.limit) : 10,
     });

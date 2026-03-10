@@ -12,6 +12,7 @@ import { GrowthMetricsModule } from './growth-metrics/growth-metrics.module';
 import { PhotosModule } from './photos/photos.module';
 import { SpeciesModule } from './species/species.module';
 import { PublicModule } from './public/public.module';
+import { SurveyAreasModule } from './survey-areas/survey-areas.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { PublicModule } from './public/public.module';
     GrowthMetricsModule,
     PhotosModule,
     SpeciesModule,
+    SurveyAreasModule,
     PublicModule,
   ],
 })

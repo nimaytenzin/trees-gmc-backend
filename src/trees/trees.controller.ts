@@ -15,6 +15,7 @@ import { CreateTreeDto } from './dto/create-tree.dto';
 import { UpdateTreeDto } from './dto/update-tree.dto';
 import { TreeFilterDto } from './dto/tree-filter.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { CurrentUser } from '../common/decorators/current-user.decorator';
 
 @ApiTags('Trees')
 @Controller('api/trees')
@@ -23,8 +24,8 @@ export class TreesController {
   constructor(private readonly treesService: TreesService) {}
 
   @Post()
-  create(@Body() dto: CreateTreeDto) {
-    return this.treesService.create(dto);
+  create(@Body() dto: CreateTreeDto, @CurrentUser() user: any) {
+    return this.treesService.create(dto, user);
   }
 
   @Get()

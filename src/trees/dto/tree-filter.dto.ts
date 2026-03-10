@@ -1,6 +1,9 @@
-import { IsEnum, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsEnum, IsOptional, IsString, IsNumber, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { Condition } from '../../common/enums/condition.enum';
+
+const NUMERIC_OPS = ['eq', 'gt', 'gte', 'lt', 'lte'] as const;
+export type NumericOp = (typeof NUMERIC_OPS)[number];
 
 export class TreeFilterDto {
   @IsString()
@@ -14,6 +17,33 @@ export class TreeFilterDto {
   @IsString()
   @IsOptional()
   speciesId?: string;
+
+  @IsIn(NUMERIC_OPS)
+  @IsOptional()
+  heightOp?: NumericOp;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  heightValue?: number;
+
+  @IsIn(NUMERIC_OPS)
+  @IsOptional()
+  dbhOp?: NumericOp;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  dbhValue?: number;
+
+  @IsIn(NUMERIC_OPS)
+  @IsOptional()
+  canopyOp?: NumericOp;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  canopyValue?: number;
 
   @IsNumber()
   @IsOptional()

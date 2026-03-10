@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Species } from '../../species/entities/species.entity';
 import { GrowthMetric } from '../../growth-metrics/entities/growth-metric.entity';
+import { SurveyArea } from '../../survey-areas/entities/survey-area.entity';
 
 @Entity('trees')
 export class Tree {
@@ -26,6 +27,14 @@ export class Tree {
 
   @Column()
   speciesId: string;
+
+  // --- Survey Area relationship (optional) ---
+  @ManyToOne(() => SurveyArea, (area) => area.trees, { nullable: true, eager: false })
+  @JoinColumn({ name: 'surveyAreaId' })
+  surveyArea?: SurveyArea | null;
+
+  @Column({ nullable: true })
+  surveyAreaId?: string | null;
 
   // --- Location ---
   @Column('decimal', { precision: 12, scale: 8 })

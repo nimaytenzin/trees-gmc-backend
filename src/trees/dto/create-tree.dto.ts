@@ -3,6 +3,7 @@ import {
   IsNumber,
   IsOptional,
   IsInt,
+  IsUUID,
 } from 'class-validator';
 
 export class CreateTreeDto {
@@ -26,4 +27,7 @@ export class CreateTreeDto {
   @IsOptional()
   yearOfPlantation: number;
 
+  @IsUUID()
+  @IsOptional()
+  surveyAreaId?: string;
 }

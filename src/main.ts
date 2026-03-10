@@ -66,6 +66,22 @@ async function bootstrap() {
     console.log('Default admin user created with email', adminEmail);
   }
 
+  // Ensure default enumerator user exists
+  const enumeratorEmail = 'enumerator@gmc.com';
+  const existingEnumerator = await usersService.findByEmail(enumeratorEmail);
+
+  if (!existingEnumerator) {
+    await usersService.create({
+      name: 'GMC Tree Enumerator',
+      designation: 'Enumerator',
+      email: enumeratorEmail,
+      password: 'GMC2026',
+      role: Role.ENUMERATOR,
+    });
+    // eslint-disable-next-line no-console
+    console.log('Default enumerator user created with email', enumeratorEmail);
+  }
+
   // Ensure default species exist (seed if missing)
   const speciesService = app.get(SpeciesService);
   for (const dto of DEFAULT_SPECIES) {
