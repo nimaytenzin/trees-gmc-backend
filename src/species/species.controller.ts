@@ -13,6 +13,9 @@ import { SpeciesService } from './species.service';
 import { CreateSpeciesDto } from './dto/create-species.dto';
 import { UpdateSpeciesDto } from './dto/update-species.dto';
 import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+import { RolesGuard } from '../common/guards/roles.guard';
+import { Roles } from '../common/decorators/roles.decorator';
+import { Role } from '../common/enums/role.enum';
 
 @ApiTags('Species')
 @Controller('api/species')
@@ -21,6 +24,8 @@ export class SpeciesController {
   constructor(private readonly speciesService: SpeciesService) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   create(@Body() dto: CreateSpeciesDto) {
     return this.speciesService.create(dto);
   }
@@ -36,12 +41,17 @@ export class SpeciesController {
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() dto: UpdateSpeciesDto) {
     return this.speciesService.update(id, dto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.speciesService.remove(id);
+  @UseGuards(RolesGuard)
+  @Roles(Role.ADMIN)
+  async remove(@Param('id') id: string) {
+    await this.speciesService.remove(id);
+    return { message: 'Species deleted' };
   }
 }
