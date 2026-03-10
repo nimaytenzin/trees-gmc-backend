@@ -37,13 +37,13 @@ export class Tree {
   surveyAreaId?: string | null;
 
   // --- Location ---
-  @Column('decimal', { precision: 15, scale: 8 })
+  @Column('decimal')
   xCoordinate: number;
 
-  @Column('decimal', { precision: 15, scale: 8 })
+  @Column('decimal',)
   yCoordinate: number;
 
-  @Column('decimal', { precision: 15, scale: 8, nullable: true })
+  @Column('decimal', { nullable: true })
   zCoordinate: number;
 
   @Column('int', { nullable: true })
