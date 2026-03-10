@@ -19,9 +19,8 @@ import { SurveyAreasModule } from './survey-areas/survey-areas.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(databaseConfig),
     ServeStaticModule.forRoot({
-      // Use project root so uploads/ sits alongside src/ and dist/
-      rootPath: join(process.cwd(), 'uploads'),
-      serveRoot: '/uploads',
+      rootPath: join(__dirname, '..', 'uploads'),
+      serveRoot: process.env.NODE_ENV === 'production' ? '/api/uploads' : '/uploads',
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     AuthModule,
@@ -30,6 +29,7 @@ import { SurveyAreasModule } from './survey-areas/survey-areas.module';
     GrowthMetricsModule,
     PhotosModule,
     SpeciesModule,
+    
     SurveyAreasModule,
     PublicModule,
   ],
