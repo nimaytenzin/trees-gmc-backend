@@ -1,0 +1,59 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import { TreesService } from './trees.service';
+import { CreateTreeDto } from './dto/create-tree.dto';
+import { UpdateTreeDto } from './dto/update-tree.dto';
+import { TreeFilterDto } from './dto/tree-filter.dto';
+import { JwtAuthGuard } from '../common/guards/jwt-auth.guard';
+
+@ApiTags('Trees')
+@Controller('api/trees')
+@UseGuards(JwtAuthGuard)
+export class TreesController {
+  constructor(private readonly treesService: TreesService) {}
+
+  @Post()
+  create(@Body() dto: CreateTreeDto) {
+    return this.treesService.create(dto);
+  }
+
+  @Get()
+  findAll(@Query() filters: TreeFilterDto) {
+    return this.treesService.findAll(filters);
+  }
+
+  @Get('map')
+  findAllForMap() {
+    return this.treesService.findAllForMap();
+  }
+
+  @Get('statistics')
+  getStatistics() {
+    return this.treesService.getStatistics();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.treesService.findOne(id);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() dto: UpdateTreeDto) {
+    return this.treesService.update(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.treesService.remove(id);
+  }
+}
