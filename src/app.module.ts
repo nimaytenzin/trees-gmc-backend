@@ -20,7 +20,7 @@ import { SurveyAreasModule } from './survey-areas/survey-areas.module';
     TypeOrmModule.forRootAsync(databaseConfig),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: process.env.NODE_ENV === 'production' ? '/api/uploads' : '/uploads',
+      serveRoot: '/uploads',
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
     AuthModule,
