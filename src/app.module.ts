@@ -19,7 +19,8 @@ import { SurveyAreasModule } from './survey-areas/survey-areas.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(databaseConfig),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      // Use project root so uploads/ sits alongside src/ and dist/
+      rootPath: join(process.cwd(), 'uploads'),
       serveRoot: '/uploads',
     }),
     ThrottlerModule.forRoot([{ ttl: 60000, limit: 10 }]),
