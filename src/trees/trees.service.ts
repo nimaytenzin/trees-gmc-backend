@@ -41,6 +41,7 @@ export class TreesService {
       search,
       healthCondition,
       speciesId,
+      surveyAreaId,
       heightOp,
       heightValue,
       dbhOp,
@@ -99,6 +100,10 @@ export class TreesService {
 
     if (speciesId) {
       qb.andWhere('tree.speciesId = :speciesId', { speciesId });
+    }
+
+    if (surveyAreaId) {
+      qb.andWhere('tree.surveyAreaId = :surveyAreaId', { surveyAreaId });
     }
 
     addLatestMetricNumericFilter('heightM', heightOp, heightValue, 'heightValue');

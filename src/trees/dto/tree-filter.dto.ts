@@ -18,6 +18,10 @@ export class TreeFilterDto {
   @IsOptional()
   speciesId?: string;
 
+  @IsString()
+  @IsOptional()
+  surveyAreaId?: string;
+
   @IsIn(NUMERIC_OPS)
   @IsOptional()
   heightOp?: NumericOp;
