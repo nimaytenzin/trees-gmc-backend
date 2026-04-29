@@ -125,14 +125,28 @@ export class TreesService {
     };
   }
 
-  async findAllForMap(): Promise<Tree[]> {
-    return this.treeRepository
-      .createQueryBuilder('tree')
-      .leftJoinAndSelect('tree.species', 'species')
-      .leftJoinAndSelect('tree.growthMetrics', 'metric')
-      .leftJoinAndSelect('tree.surveyArea', 'surveyArea')
-      .orderBy('metric.recordedAt', 'DESC')
-      .getMany();
+  async findAllForMap(): Promise<any[]> {
+    const rows: any[] = await this.dataSource.query(`
+      SELECT
+        t.id,
+        t."treeId",
+        t."xCoordinate",
+        t."yCoordinate",
+        s."commonName",
+        s."scientificName"
+      FROM trees t
+      LEFT JOIN species s ON s.id = t."speciesId"
+      ORDER BY t."treeId"
+    `);
+
+    return rows.map((row) => ({
+      id: row.id,
+      treeId: row.treeId,
+      xCoordinate: row.xCoordinate,
+      yCoordinate: row.yCoordinate,
+      commonName: row.commonName,
+      scientificName: row.scientificName,
+    }));
   }
 
   async findOne(id: string): Promise<Tree> {
@@ -146,9 +160,10 @@ export class TreesService {
   }
 
   async update(id: string, dto: UpdateTreeDto): Promise<Tree> {
-    const tree = await this.findOne(id);
-    Object.assign(tree, dto);
-    await this.treeRepository.save(tree);
+    await this.findOne(id); // throws 404 if not found
+    // Use update() instead of save() to avoid TypeORM using the cached
+    // species relation object's ID instead of the new speciesId FK value.
+    await this.treeRepository.update(id, dto);
     return this.findOne(id);
   }
 
